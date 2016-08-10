@@ -147,6 +147,21 @@ class Client extends \SoapClient
         $params = new AutotaskObjects\UpdateParam($obj);
         return $this->_call('update', array($params));
     }
+    
+    public function bulkUpdateUnlimited(array $objs) 
+    {
+        $subObjs = array();
+        $calls = array();
+        foreach ($objs as $obj) {
+            if (count($subObjs) == 200) {
+                $calls[] = $this->bulkUpdate($subObjs);
+                $subObjs = array();
+            }
+            $subObjs[] = $obj;
+        }
+        $calls[] = $this->bulkUpdate($subObjs);
+        return $calls;
+    }
 
     public function bulkUpdate(array $objs)
     {
